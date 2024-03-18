@@ -85,12 +85,27 @@ def preprocess_dog():
 
     time_start = time.time()
 
+    path_images = os.path.join(path,'images.txt')
+    path_split = os.path.join(path,'train_test_split.txt')
     train_save_path = os.path.join(path,'dataset/train_crop/')
     test_save_path = os.path.join(path,'dataset/test_crop/')
+    bbox_path = os.path.join(path, 'bounding_boxes.txt')
 
-    images = get_images()
-    split = get_split()
-    bboxes = get_bboxes()
+    images = []
+    with open(path_images,'r') as f:
+        for line in f:
+            images.append(list(line.strip('\n').split(',')))
+    print("Images: ", images)
+    split = []
+    with open(path_split, 'r') as f_:
+        for line in f_:
+            split.append(list(line.strip('\n').split(',')))
+
+    bboxes = dict()
+    with open(bbox_path, 'r') as bf:
+        for line in bf:
+            id, x, y, w, h = tuple(map(float, line.split(' ')))
+            bboxes[int(id)]=(x, y, w, h)
 
     num = len(images)
     for k in range(num):
@@ -101,7 +116,7 @@ def preprocess_dog():
             
             if not os.path.isdir(train_save_path + file_name):
                 os.makedirs(os.path.join(train_save_path, file_name))
-            img = Image.open(os.path.join(os.path.join(path, 'Images'),images[k][0].split(' ')[1])).convert('RGB')
+            img = Image.open(os.path.join(os.path.join(path, 'images'),images[k][0].split(' ')[1])).convert('RGB')
             x, y, w, h = bboxes[id]
             cropped_img = img.crop((x, y, x+w, y+h))
             cropped_img.save(os.path.join(os.path.join(train_save_path,file_name),images[k][0].split(' ')[1].split('/')[1]))
@@ -109,7 +124,7 @@ def preprocess_dog():
         else:
             if not os.path.isdir(test_save_path + file_name):
                 os.makedirs(os.path.join(test_save_path,file_name))
-            img = Image.open(os.path.join(os.path.join(path, 'Images'),images[k][0].split(' ')[1])).convert('RGB')
+            img = Image.open(os.path.join(os.path.join(path, 'images'),images[k][0].split(' ')[1])).convert('RGB')
             x, y, w, h = bboxes[id]
             cropped_img = img.crop((x, y, x+w, y+h))
             cropped_img.save(os.path.join(os.path.join(test_save_path,file_name),images[k][0].split(' ')[1].split('/')[1]))
