@@ -18,6 +18,8 @@ def get_data(args: argparse.Namespace):
     torch.manual_seed(args.seed)
     random.seed(args.seed)
     np.random.seed(args.seed)
+    if args.dataset == 'DOGS':
+        return get_dogs(True, './data/stanford_dogs/dataset/train_crop', './data/stanford_dogs/dataset/train', './data/stanford_dogs/dataset/test_crop', args.image_size, args.seed, args.validation_size)
     if args.dataset =='CUB-200-2011':     
         return get_birds(True, './data/CUB_200_2011/dataset/train_crop', './data/CUB_200_2011/dataset/train', './data/CUB_200_2011/dataset/test_crop', args.image_size, args.seed, args.validation_size, './data/CUB_200_2011/dataset/train', './data/CUB_200_2011/dataset/test_full')
     if args.dataset == 'pets':
@@ -240,6 +242,43 @@ def get_partimagenet(augment:bool, train_dir:str, project_dir: str, test_dir:str
     return create_datasets(transform1, transform2, transform_no_augment, 3, train_dir, project_dir, test_dir, seed, validation_size)
 
 def get_birds(augment: bool, train_dir:str, project_dir: str, test_dir:str, img_size: int, seed:int, validation_size:float, train_dir_pretrain = None, test_dir_projection = None): 
+    shape = (3, img_size, img_size)
+    mean = (0.485, 0.456, 0.406)
+    std = (0.229, 0.224, 0.225)
+    normalize = transforms.Normalize(mean=mean,std=std)
+    transform_no_augment = transforms.Compose([
+                            transforms.Resize(size=(img_size, img_size)),
+                            transforms.ToTensor(),
+                            normalize
+                        ])
+    transform1p = None
+    if augment:
+        transform1 = transforms.Compose([
+            transforms.Resize(size=(img_size+8, img_size+8)), 
+            TrivialAugmentWideNoColor(),
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomResizedCrop(img_size+4, scale=(0.95, 1.))
+        ])
+        transform1p = transforms.Compose([
+            transforms.Resize(size=(img_size+32, img_size+32)), #for pretraining, crop can be bigger since it doesn't matter when bird is not fully visible
+            TrivialAugmentWideNoColor(),
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomResizedCrop(img_size+4, scale=(0.95, 1.))
+        ])
+        transform2 = transforms.Compose([
+                            TrivialAugmentWideNoShape(),
+                            transforms.RandomCrop(size=(img_size, img_size)), #includes crop
+                            transforms.ToTensor(),
+                            normalize
+                            ])
+    else:
+        transform1 = transform_no_augment    
+        transform2 = transform_no_augment           
+
+    return create_datasets(transform1, transform2, transform_no_augment, 3, train_dir, project_dir, test_dir, seed, validation_size, train_dir_pretrain, test_dir_projection, transform1p)
+
+def get_dogs(augment: bool, train_dir: str, project_dir: str, test_dir: str, img_size: int, seed: int, validation_size: float, train_dir_pretrain = None, test_dir_projection = None):
+    # Copy ALL from get_birds
     shape = (3, img_size, img_size)
     mean = (0.485, 0.456, 0.406)
     std = (0.229, 0.224, 0.225)
