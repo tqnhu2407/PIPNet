@@ -6,6 +6,26 @@ import time
 from PIL import Image
 import xml.etree.ElementTree as ET
 
+def get_name2id():
+    file_list = scipy.io.loadmat('./data/stanford_dogs/file_list.mat')
+    name2id = {}
+    id = 0
+    for i in range(len(file_list['file_list'])):
+        name = file_list['file_list'][i][0][0]
+        id += 1
+        name2id[name] = str(id)
+    return name2id
+
+def get_id2name():
+    file_list = scipy.io.loadmat('./data/stanford_dogs/file_list.mat')
+    id2name = {}
+    id = 0
+    for i in range(len(file_list['file_list'])):
+        name = file_list['file_list'][i][0][0]
+        id += 1
+        id2name[str(id)] = name
+    return id2name
+
 def get_images():
     file_list = scipy.io.loadmat('./data/stanford_dogs/file_list.mat')
     id = 0
@@ -21,12 +41,7 @@ def get_split():
     train_list = scipy.io.loadmat('./data/stanford_dogs/train_list.mat')
     test_list = scipy.io.loadmat('./data/stanford_dogs/test_list.mat')
 
-    name2id = {}
-    id = 0
-    for i in range(len(file_list['file_list'])):
-        name = file_list['file_list'][i][0][0]
-        id += 1
-        name2id[name] = str(id)
+    name2id = get_name2id()
     
     split = []
     for e in train_list['file_list']:
@@ -43,12 +58,7 @@ def get_split():
 
 def get_bboxes():
     file_list = scipy.io.loadmat('./data/stanford_dogs/file_list.mat')
-    name2id = {}
-    id = 0
-    for i in range(len(file_list['file_list'])):
-        name = file_list['file_list'][i][0][0]
-        id += 1
-        name2id[name] = str(id)
+    name2id = get_name2id()
 
     file_list = scipy.io.loadmat('./data/stanford_dogs/file_list.mat')
     annotation_list = file_list['annotation_list']
@@ -62,8 +72,8 @@ def get_bboxes():
         for bndbox in root.findall("./object/bndbox"):
             xmin = float(bndbox.find('xmin').text)
             ymin = float(bndbox.find('ymin').text)
-            xmax = float(bndbox.find('xmin').text)
-            ymax = float(bndbox.find('ymin').text)      
+            xmax = float(bndbox.find('xmax').text)
+            ymax = float(bndbox.find('ymax').text)      
             width = xmax - xmin
             height = ymax - ymin      
         id = name2id[annotation_file + '.jpg']
@@ -132,8 +142,32 @@ def preprocess_dog():
     print('DOGS, %s!' % (time_end - time_start))
     return
 
-def explore_dogs():
-    return
+def create_files():
+    images = get_images()
+    with open('./data/stanford_dogs/images.txt', 'w') as f:
+        for i in images:
+            f.write(i[0] + '\n')
+    split = get_split()
+    with open('./data/stanford_dogs/train_test_split.txt', 'w') as f:
+        for s in split:
+            f.write(s[0] + '\n')
+    bboxes = get_bboxes()
+    with open('./data/stanford_dogs/bounding_boxes.txt', 'w') as f:
+        for k, v in bboxes.items():
+            f.write(str(k) + ' ' + ' '.join(list(map(str, v))) + '\n')
+
+    id2name = get_id2name()
+    labels = []
+    for v in id2name.values():
+        label = v.split('/')[0]
+        if label not in labels:
+            labels.append(label)
+    
+    with open('./data/stanford_dogs/image_class_labels.txt', 'w') as f:
+        for k, v in id2name.items():
+            classname = v.split('/')[0]
+            label = labels.index(classname)
+            f.write(str(k) + ' ' + str(label + 1) + '\n')
 
 if __name__ == "__main__":
     preprocess_dog()
