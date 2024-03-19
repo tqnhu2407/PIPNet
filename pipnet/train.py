@@ -123,9 +123,9 @@ def calculate_loss(proto_features, pooled, out, ys1, align_pf_weight, t_weight, 
         else:
             loss+= cl_weight * class_loss
     # Our tanh-loss optimizes for uniformity and was sufficient for our experiments. However, if pretraining of the prototypes is not working well for your dataset, you may try to add another uniformity loss from https://www.tongzhouwang.info/hypersphere/ Just uncomment the following three lines
-    # else:
-    #     uni_loss = (uniform_loss(F.normalize(pooled1+EPS,dim=1)) + uniform_loss(F.normalize(pooled2+EPS,dim=1)))/2.
-    #     loss += unif_weight * uni_loss
+    else:
+        uni_loss = (uniform_loss(F.normalize(pooled1+EPS,dim=1)) + uniform_loss(F.normalize(pooled2+EPS,dim=1)))/2.
+        loss += unif_weight * uni_loss
 
     acc=0.
     if not pretrain:
