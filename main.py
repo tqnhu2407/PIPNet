@@ -215,7 +215,7 @@ def run_pipnet(args=None):
                     for param in params_to_train:
                         param.requires_grad = True
                     for param in params_backbone:
-                        param.requires_grad = True   
+                        param.requires_grad = True
                     frozen = False
                 # freeze first layers of backbone, train rest
                 else:
@@ -329,7 +329,7 @@ def run_pipnet(args=None):
 
 
     # EVALUATE OOD DETECTION
-    ood_datasets = ["CARS", "CUB-200-2011", "pets"]
+    ood_datasets = ["CARS", "CUB-200-2011"]
     for percent in [95.]:
         print("\nOOD Evaluation for epoch", epoch,"with percent of", percent, flush=True)
         _, _, _, class_thresholds = get_thresholds(net, testloader, epoch, device, percent, log)

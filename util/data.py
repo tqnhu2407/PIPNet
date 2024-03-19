@@ -19,7 +19,7 @@ def get_data(args: argparse.Namespace):
     random.seed(args.seed)
     np.random.seed(args.seed)
     if args.dataset == 'DOGS':
-        return get_dogs(True, './data/stanford_dogs/dataset/train_crop', './data/stanford_dogs/dataset/train', './data/stanford_dogs/dataset/test_crop', args.image_size, args.seed, args.validation_size)
+        return get_dogs(True, './data/stanford_dogs/dataset/train_crop', './data/stanford_dogs/dataset/train', './data/stanford_dogs/dataset/test_crop', args.image_size, args.seed, args.validation_size, './data/stanford_dogs/dataset/train', './data/stanford_dogs/dataset/test_full')
     if args.dataset =='CUB-200-2011':     
         return get_birds(True, './data/CUB_200_2011/dataset/train_crop', './data/CUB_200_2011/dataset/train', './data/CUB_200_2011/dataset/test_crop', args.image_size, args.seed, args.validation_size, './data/CUB_200_2011/dataset/train', './data/CUB_200_2011/dataset/test_full')
     if args.dataset == 'pets':
