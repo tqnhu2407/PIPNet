@@ -95,7 +95,6 @@ def preprocess_dog():
     with open(path_images,'r') as f:
         for line in f:
             images.append(list(line.strip('\n').split(',')))
-    print("Images: ", images)
     split = []
     with open(path_split, 'r') as f_:
         for line in f_:
@@ -120,7 +119,7 @@ def preprocess_dog():
             x, y, w, h = bboxes[id]
             cropped_img = img.crop((x, y, x+w, y+h))
             cropped_img.save(os.path.join(os.path.join(train_save_path,file_name),images[k][0].split(' ')[1].split('/')[1]))
-            print('%s' % images[k][0].split(' ')[1].split('/')[1])
+            # print('%s' % images[k][0].split(' ')[1].split('/')[1])
         else:
             if not os.path.isdir(test_save_path + file_name):
                 os.makedirs(os.path.join(test_save_path,file_name))
@@ -128,7 +127,7 @@ def preprocess_dog():
             x, y, w, h = bboxes[id]
             cropped_img = img.crop((x, y, x+w, y+h))
             cropped_img.save(os.path.join(os.path.join(test_save_path,file_name),images[k][0].split(' ')[1].split('/')[1]))
-            print('%s' % images[k][0].split(' ')[1].split('/')[1])
+            # print('%s' % images[k][0].split(' ')[1].split('/')[1])
 
     train_save_path = os.path.join(path,'dataset/train/')
     test_save_path = os.path.join(path,'dataset/test_full/')
@@ -147,12 +146,12 @@ def preprocess_dog():
         
             img.save(os.path.join(os.path.join(train_save_path,file_name),images[k][0].split(' ')[1].split('/')[1]))
             
-            print('%s' % images[k][0].split(' ')[1].split('/')[1])
+            # print('%s' % images[k][0].split(' ')[1].split('/')[1])
         else:
             if not os.path.isdir(test_save_path + file_name):
                 os.makedirs(os.path.join(test_save_path,file_name))
             shutil.copy(path + 'images/' + images[k][0].split(' ')[1], os.path.join(os.path.join(test_save_path,file_name),images[k][0].split(' ')[1].split('/')[1]))
-            print('%s' % images[k][0].split(' ')[1].split('/')[1])
+            # print('%s' % images[k][0].split(' ')[1].split('/')[1])
     time_end = time.time()
     print('DOGS, %s!' % (time_end - time_start))
     return
