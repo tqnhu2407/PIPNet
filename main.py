@@ -90,14 +90,17 @@ def run_pipnet(args=None):
         if args.state_dict_dir_net != '':
             epoch = 0
             checkpoint = torch.load(args.state_dict_dir_net,map_location=device)
-            net.load_state_dict(checkpoint['model_state_dict'],strict=True) 
+            new_classification_weight = torch.zeros([120, 2048], dtype=torch.float32)
+            checkpoint['model_state_dict']['module._classification.weight'] = new_classification_weight
+            net.load_state_dict(checkpoint['model_state_dict'],strict=False) 
             print("Pretrained network loaded", flush=True)
             net.module._multiplier.requires_grad = False
             try:
                 optimizer_net.load_state_dict(checkpoint['optimizer_net_state_dict']) 
             except:
                 pass
-            if torch.mean(net.module._classification.weight).item() > 1.0 and torch.mean(net.module._classification.weight).item() < 3.0 and torch.count_nonzero(torch.relu(net.module._classification.weight-1e-5)).float().item() > 0.8*(num_prototypes*len(classes)): #assume that the linear classification layer is not yet trained (e.g. when loading a pretrained backbone only)
+
+            if True: # torch.mean(net.module._classification.weight).item() > 1.0 and torch.mean(net.module._classification.weight).item() < 3.0 and torch.count_nonzero(torch.relu(net.module._classification.weight-1e-5)).float().item() > 0.8*(num_prototypes*len(classes)): #assume that the linear classification layer is not yet trained (e.g. when loading a pretrained backbone only)
                 print("We assume that the classification layer is not yet trained. We re-initialize it...", flush=True)
                 torch.nn.init.normal_(net.module._classification.weight, mean=1.0,std=0.1) 
                 torch.nn.init.constant_(net.module._multiplier, val=2.)
@@ -319,13 +322,13 @@ def run_pipnet(args=None):
         eval_prototypes_cub_parts_csv(csvfile_all, parts_loc_path, parts_name_path, imgs_id_path, 'test_all_thres'+str(cubthreshold)+'_'+str(epoch), args, log)
         
     # visualize predictions 
-    visualize(net, projectloader, len(classes), device, 'visualised_prototypes', args)
-    testset_img0_path = test_projectloader.dataset.samples[0][0]
-    test_path = os.path.split(os.path.split(testset_img0_path)[0])[0]
-    vis_pred(net, test_path, classes, device, args) 
-    if args.extra_test_image_folder != '':
-        if os.path.exists(args.extra_test_image_folder):   
-            vis_pred_experiments(net, args.extra_test_image_folder, classes, device, args)
+    # visualize(net, projectloader, len(classes), device, 'visualised_prototypes', args)
+    # testset_img0_path = test_projectloader.dataset.samples[0][0]
+    # test_path = os.path.split(os.path.split(testset_img0_path)[0])[0]
+    # vis_pred(net, test_path, classes, device, args) 
+    # if args.extra_test_image_folder != '':
+    #     if os.path.exists(args.extra_test_image_folder):   
+    #         vis_pred_experiments(net, args.extra_test_image_folder, classes, device, args)
 
 
     # EVALUATE OOD DETECTION
