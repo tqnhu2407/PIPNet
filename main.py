@@ -267,7 +267,7 @@ def run_pipnet(args=None):
     torch.save({'model_state_dict': net.state_dict(), 'optimizer_net_state_dict': optimizer_net.state_dict(), 'optimizer_classifier_state_dict': optimizer_classifier.state_dict()}, os.path.join(os.path.join(args.log_dir, 'checkpoints'), 'net_trained_last'))
 
     topks = visualize_topk(net, projectloader, len(classes), device, 'visualised_prototypes_topk', args)
-    set weights of prototypes that are never really found in projection set to 0
+    # set weights of prototypes that are never really found in projection set to 0
     set_to_zero = []
     if topks:
         for prot in topks.keys():
@@ -319,7 +319,7 @@ def run_pipnet(args=None):
         csvfile_all = get_proto_patches_cub(net, test_projectloader, 'test_'+str(epoch), device, args, threshold=cubthreshold)
         eval_prototypes_cub_parts_csv(csvfile_all, parts_loc_path, parts_name_path, imgs_id_path, 'test_all_thres'+str(cubthreshold)+'_'+str(epoch), args, log)
         
-    visualize predictions 
+    # visualize predictions 
     visualize(net, projectloader, len(classes), device, 'visualised_prototypes', args)
     testset_img0_path = test_projectloader.dataset.samples[0][0]
     test_path = os.path.split(os.path.split(testset_img0_path)[0])[0]
@@ -329,7 +329,7 @@ def run_pipnet(args=None):
             vis_pred_experiments(net, args.extra_test_image_folder, classes, device, args)
 
 
-    EVALUATE OOD DETECTION
+    # EVALUATE OOD DETECTION
     ood_datasets = ["CARS", "DOGS"]
     for percent in [95.]:
         print("\nOOD Evaluation for epoch", epoch,"with percent of", percent, flush=True)
