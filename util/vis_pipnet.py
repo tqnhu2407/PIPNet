@@ -77,7 +77,6 @@ def visualize_topk(net, projectloader, num_classes, device, foldername, args: ar
                             replace_choice = random.choice([0, 1])
                             if replace_choice > 0:
                                 topks[p][-1] = (i, pooled[p].item())
-    return topks
 
     alli = []
     prototypes_not_used = []
@@ -135,30 +134,30 @@ def visualize_topk(net, projectloader, num_classes, device, foldername, args: ar
                                 saved[p]+=1
                                 tensors_per_prototype[p].append(img_tensor_patch)
 
-    # print("Abstained: ", abstained, flush=True)
-    # all_tensors = []
-    # for p in range(net.module._num_prototypes):
-        # if saved[p]>0:
-            # add text next to each topk-grid, to easily see which prototype it is
-            # text = "P "+str(p)
-            # txtimage = Image.new("RGB", (img_tensor_patch.shape[1],img_tensor_patch.shape[2]), (0, 0, 0))
-            # draw = D.Draw(txtimage)
-            # draw.text((img_tensor_patch.shape[0]//2, img_tensor_patch.shape[1]//2), text, anchor='mm', fill="white")
-            # txttensor = transforms.ToTensor()(txtimage)
-            # tensors_per_prototype[p].append(txttensor)
-            # save top-k image patches in grid
-            # try:
-    #             grid = torchvision.utils.make_grid(tensors_per_prototype[p], nrow=k+1, padding=1)
-    #             torchvision.utils.save_image(grid,os.path.join(dir,"grid_topk_%s.png"%(str(p))))
-    #             if saved[p]>=k:
-    #                 all_tensors+=tensors_per_prototype[p]
-    #         except:
-    #             pass
-    # if len(all_tensors)>0:
-    #     grid = torchvision.utils.make_grid(all_tensors, nrow=k+1, padding=1)
-    #     torchvision.utils.save_image(grid,os.path.join(dir,"grid_topk_all.png"))
-    # else:
-    #     print("Pretrained prototypes not visualized. Try to pretrain longer.", flush=True)
+    print("Abstained: ", abstained, flush=True)
+    all_tensors = []
+    for p in range(net.module._num_prototypes):
+        if saved[p]>0:
+            add text next to each topk-grid, to easily see which prototype it is
+            text = "P "+str(p)
+            txtimage = Image.new("RGB", (img_tensor_patch.shape[1],img_tensor_patch.shape[2]), (0, 0, 0))
+            draw = D.Draw(txtimage)
+            draw.text((img_tensor_patch.shape[0]//2, img_tensor_patch.shape[1]//2), text, anchor='mm', fill="white")
+            txttensor = transforms.ToTensor()(txtimage)
+            tensors_per_prototype[p].append(txttensor)
+            save top-k image patches in grid
+            try:
+                grid = torchvision.utils.make_grid(tensors_per_prototype[p], nrow=k+1, padding=1)
+                torchvision.utils.save_image(grid,os.path.join(dir,"grid_topk_%s.png"%(str(p))))
+                if saved[p]>=k:
+                    all_tensors+=tensors_per_prototype[p]
+            except:
+                pass
+    if len(all_tensors)>0:
+        grid = torchvision.utils.make_grid(all_tensors, nrow=k+1, padding=1)
+        torchvision.utils.save_image(grid,os.path.join(dir,"grid_topk_all.png"))
+    else:
+        print("Pretrained prototypes not visualized. Try to pretrain longer.", flush=True)
     return topks
         
 
