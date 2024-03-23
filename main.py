@@ -90,9 +90,7 @@ def run_pipnet(args=None):
         if args.state_dict_dir_net != '':
             epoch = 0
             checkpoint = torch.load(args.state_dict_dir_net,map_location=device)
-            new_classification_weight = torch.zeros([120, 2048], dtype=torch.float32)
-            checkpoint['model_state_dict']['module._classification.weight'] = new_classification_weight
-            net.load_state_dict(checkpoint['model_state_dict'],strict=False) 
+            net.load_state_dict(checkpoint['model_state_dict'],strict=True) 
             print("Pretrained network loaded", flush=True)
             net.module._multiplier.requires_grad = False
             try:
@@ -100,7 +98,7 @@ def run_pipnet(args=None):
             except:
                 pass
 
-            if True: # torch.mean(net.module._classification.weight).item() > 1.0 and torch.mean(net.module._classification.weight).item() < 3.0 and torch.count_nonzero(torch.relu(net.module._classification.weight-1e-5)).float().item() > 0.8*(num_prototypes*len(classes)): #assume that the linear classification layer is not yet trained (e.g. when loading a pretrained backbone only)
+            if torch.mean(net.module._classification.weight).item() > 1.0 and torch.mean(net.module._classification.weight).item() < 3.0 and torch.count_nonzero(torch.relu(net.module._classification.weight-1e-5)).float().item() > 0.8*(num_prototypes*len(classes)): #assume that the linear classification layer is not yet trained (e.g. when loading a pretrained backbone only)
                 print("We assume that the classification layer is not yet trained. We re-initialize it...", flush=True)
                 torch.nn.init.normal_(net.module._classification.weight, mean=1.0,std=0.1) 
                 torch.nn.init.constant_(net.module._multiplier, val=2.)
