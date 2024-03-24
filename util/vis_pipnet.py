@@ -138,14 +138,14 @@ def visualize_topk(net, projectloader, num_classes, device, foldername, args: ar
     all_tensors = []
     for p in range(net.module._num_prototypes):
         if saved[p]>0:
-            add text next to each topk-grid, to easily see which prototype it is
+            # add text next to each topk-grid, to easily see which prototype it is
             text = "P "+str(p)
             txtimage = Image.new("RGB", (img_tensor_patch.shape[1],img_tensor_patch.shape[2]), (0, 0, 0))
             draw = D.Draw(txtimage)
             draw.text((img_tensor_patch.shape[0]//2, img_tensor_patch.shape[1]//2), text, anchor='mm', fill="white")
             txttensor = transforms.ToTensor()(txtimage)
             tensors_per_prototype[p].append(txttensor)
-            save top-k image patches in grid
+            # save top-k image patches in grid
             try:
                 grid = torchvision.utils.make_grid(tensors_per_prototype[p], nrow=k+1, padding=1)
                 torchvision.utils.save_image(grid,os.path.join(dir,"grid_topk_%s.png"%(str(p))))
