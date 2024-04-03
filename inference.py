@@ -46,9 +46,8 @@ if __name__ == "__main__":
     # Obtain the dataset and dataloaders
     # trainloader, trainloader_pretraining, trainloader_normal, trainloader_normal_augment, projectloader, testloader, test_projectloader, classes = get_dataloaders(args, device)
 
-    train_dir = './data/stanford_dogs/dataset/train_crop'
-    trainvalset = torchvision.datasets.ImageFolder(train_dir)
-    classes = trainvalset.classes
+    with open('classes.txt', 'r') as f:
+        classes = f.readlines()
 
     # Create a convolutional network based on arguments and add 1x1 conv layer
     feature_net, add_on_layers, pool_layer, classification_layer, num_prototypes = get_network(len(classes), args)
@@ -95,9 +94,9 @@ if __name__ == "__main__":
             f.write(f'ys_pred:\n{ys_pred}\n\n')
         if max_out_score < 7:
             with open(out_dir, 'a') as f:
-                f.write('OUT OF DISTRIBUTION')
-            print('OUT OF DISTRIBUTION')
+                f.write('I HAVE NOT SEEN THIS BEFORE!\n')
+            print('\nI HAVE NOT SEEN THIS BEFORE!\n')
         else:
             with open(out_dir, 'a') as f:
-                f.write(f'THE INPUT DOG IS A {classes[ys_pred.item()]}')
-            print(f'THE INPUT DOG IS A {classes[ys_pred.item()]}')
+                f.write(f'\nThe input image is a {classes[ys_pred.item()]}')
+            print(f'\nThe input image is a {classes[ys_pred.item()]}')
