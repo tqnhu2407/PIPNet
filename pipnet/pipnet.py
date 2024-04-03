@@ -85,7 +85,7 @@ def get_network(num_classes: int, args: argparse.Namespace):
     
     if args.num_features == 0:
         num_prototypes = first_add_on_layer_in_channels
-        print("Number of prototypes: ", num_prototypes, flush=True)
+        # print("Number of prototypes: ", num_prototypes, flush=True)
         add_on_layers = nn.Sequential(
             nn.Softmax(dim=1), #softmax over every prototype for each patch, such that for every location in image, sum over prototypes is 1                
     )

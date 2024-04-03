@@ -13,6 +13,10 @@ import torch.optim
 def get_args() -> argparse.Namespace:
 
     parser = argparse.ArgumentParser('Train a PIP-Net')
+    parser.add_argument('--image_filename',
+                        type=str,
+                        default='kissed_golden.jpeg',
+                        help='Directory containing the testing images.')
     parser.add_argument('--dataset',
                         type=str,
                         default='CUB-200-2011',
@@ -23,7 +27,7 @@ def get_args() -> argparse.Namespace:
                         help='Split between training and validation set. Can be zero when there is a separate test or validation directory. Should be between 0 and 1. Used for partimagenet (e.g. 0.2)')
     parser.add_argument('--net',
                         type=str,
-                        default='convnext_tiny_26',
+                        default='resnet50',
                         help='Base network used as backbone of PIP-Net. Default is convnext_tiny_26 with adapted strides to output 26x26 latent representations. Other option is convnext_tiny_13 that outputs 13x13 (smaller and faster to train, less fine-grained). Pretrained network on iNaturalist is only available for resnet50_inat. Options are: resnet18, resnet34, resnet50, resnet50_inat, resnet101, resnet152, convnext_tiny_26 and convnext_tiny_13.')
     parser.add_argument('--batch_size',
                         type=int,

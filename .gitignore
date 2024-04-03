@@ -5,3 +5,6 @@ __pycache__
 runs
 pipnet_cub_trained_resnet
 *.pth
+pretrained_models
+test_images
+dog_66percent_newloss
